@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Page {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  title         String
+  eyebrow       String
+  sectionLabel  String
+  sectionHref   String?
+  summary       String
+  image         String   @default("night")
+  tagline       String?
+  note          String?
+  showWeather   Boolean  @default(false)
+  visitor       Boolean  @default(false)
+  visitorLabel  String?
+  sections      Json
+  timeline      Json?
+  stats         Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model NewsPost {
+  id        String   @id @default(cuid())
+  category  String
+  date      String
+  title     String
+  excerpt   String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SponsorTier {
+  id    String        @id @default(cuid())
+  name  String
+  order Int           @default(0)
+  slots SponsorSlot[]
+}
+
+model SponsorSlot {
+  id       String      @id @default(cuid())
+  category String
+  status   String      @default("Partner slot open")
+  order    Int         @default(0)
+  tier     SponsorTier @relation(fields: [tierId], references: [id], onDelete: Cascade)
+  tierId   String
+}
+
+model FaqEntry {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
