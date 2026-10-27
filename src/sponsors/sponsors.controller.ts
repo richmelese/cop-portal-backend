@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { CreateSlotDto } from "./dto/create-slot.dto";
 import { CreateTierDto } from "./dto/create-tier.dto";
+import { QueryTiersDto } from "./dto/query-tiers.dto";
 import { UpdateSlotDto } from "./dto/update-slot.dto";
 import { UpdateTierDto } from "./dto/update-tier.dto";
 import { SponsorsService } from "./sponsors.service";
@@ -11,8 +12,8 @@ export class SponsorsController {
   constructor(private sponsorsService: SponsorsService) {}
 
   @Get()
-  findAll() {
-    return this.sponsorsService.findAllTiers();
+  findAll(@Query() query: QueryTiersDto) {
+    return this.sponsorsService.findAllTiers(query);
   }
 
   @Get(":id")

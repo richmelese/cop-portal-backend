@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { CreateNewsDto } from "./dto/create-news.dto";
+import { QueryNewsDto } from "./dto/query-news.dto";
 import { UpdateNewsDto } from "./dto/update-news.dto";
 import { NewsService } from "./news.service";
 
@@ -9,8 +10,8 @@ export class NewsController {
   constructor(private newsService: NewsService) {}
 
   @Get()
-  findAll() {
-    return this.newsService.findAll();
+  findAll(@Query() query: QueryNewsDto) {
+    return this.newsService.findAll(query);
   }
 
   @Get(":id")

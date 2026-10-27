@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { CreatePageDto } from "./dto/create-page.dto";
+import { QueryPagesDto } from "./dto/query-pages.dto";
 import { UpdatePageDto } from "./dto/update-page.dto";
 import { PagesService } from "./pages.service";
 
@@ -16,8 +17,8 @@ export class PagesController {
   constructor(private pagesService: PagesService) {}
 
   @Get()
-  findAll() {
-    return this.pagesService.findAll();
+  findAll(@Query() query: QueryPagesDto) {
+    return this.pagesService.findAll(query);
   }
 
   @Get("*slug")

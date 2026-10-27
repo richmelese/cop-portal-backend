@@ -3,6 +3,7 @@ import { ConfigModule } from "@nestjs/config";
 import { AuthModule } from "./auth/auth.module";
 import { DashboardModule } from "./dashboard/dashboard.module";
 import { FaqModule } from "./faq/faq.module";
+import { LeadersModule } from "./leaders/leaders.module";
 import { NewsModule } from "./news/news.module";
 import { PagesModule } from "./pages/pages.module";
 import { PrismaModule } from "./prisma/prisma.module";
@@ -22,6 +23,7 @@ import { UsersModule } from "./users/users.module";
     SponsorsModule,
     FaqModule,
     UploadsModule,
+    LeadersModule,
   ],
 })
 export class AppModule {}

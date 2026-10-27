@@ -1,7 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
+import { paginatedResult, paginationParams } from "../common/utils/paginate.util";
 import { CreateSlotDto } from "./dto/create-slot.dto";
 import { CreateTierDto } from "./dto/create-tier.dto";
+import { QueryTiersDto } from "./dto/query-tiers.dto";
 import { UpdateSlotDto } from "./dto/update-slot.dto";
 import { UpdateTierDto } from "./dto/update-tier.dto";
 
@@ -9,11 +11,22 @@ import { UpdateTierDto } from "./dto/update-tier.dto";
 export class SponsorsService {
   constructor(private prisma: PrismaService) {}
 
-  findAllTiers() {
-    return this.prisma.sponsorTier.findMany({
-      orderBy: { order: "asc" },
-      include: { slots: { orderBy: { order: "asc" } } },
-    });
+  async findAllTiers(query: QueryTiersDto) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 50;
+    const where = query.search ? { name: { contains: query.search, mode: "insensitive" as const } } : {};
+
+    const [data, total] = await Promise.all([
+      this.prisma.sponsorTier.findMany({
+        where,
+        orderBy: { order: "asc" },
+        include: { slots: { orderBy: { order: "asc" } } },
+        ...paginationParams(page, limit),
+      }),
+      this.prisma.sponsorTier.count({ where }),
+    ]);
+
+    return paginatedResult(data, page, limit, total);
   }
 
   async findTier(id: string) {

@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { CreateFaqDto } from "./dto/create-faq.dto";
+import { QueryFaqDto } from "./dto/query-faq.dto";
 import { UpdateFaqDto } from "./dto/update-faq.dto";
 import { FaqService } from "./faq.service";
 
@@ -9,8 +10,8 @@ export class FaqController {
   constructor(private faqService: FaqService) {}
 
   @Get()
-  findAll() {
-    return this.faqService.findAll();
+  findAll(@Query() query: QueryFaqDto) {
+    return this.faqService.findAll(query);
   }
 
   @Get(":id")

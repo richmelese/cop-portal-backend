@@ -16,7 +16,10 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get("me")
   me(@Req() req: Request) {
-    // Populated by JwtStrategy.validate() — see jwt.strategy.ts
-    return req.user;
+    // req.user is populated by JwtStrategy.validate() (see jwt.strategy.ts) and
+    // includes userId, but we only echo email back — the id lives in the token's
+    // own `sub` claim, not duplicated in response bodies.
+    const user = req.user as { userId: string; email: string };
+    return { email: user.email };
   }
 }

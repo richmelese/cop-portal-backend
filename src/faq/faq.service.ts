@@ -1,14 +1,32 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
+import { paginatedResult, paginationParams } from "../common/utils/paginate.util";
 import { CreateFaqDto } from "./dto/create-faq.dto";
+import { QueryFaqDto } from "./dto/query-faq.dto";
 import { UpdateFaqDto } from "./dto/update-faq.dto";
 
 @Injectable()
 export class FaqService {
   constructor(private prisma: PrismaService) {}
 
-  findAll() {
-    return this.prisma.faqEntry.findMany({ orderBy: { order: "asc" } });
+  async findAll(query: QueryFaqDto) {
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 50;
+    const where = query.search
+      ? {
+          OR: [
+            { question: { contains: query.search, mode: "insensitive" as const } },
+            { answer: { contains: query.search, mode: "insensitive" as const } },
+          ],
+        }
+      : {};
+
+    const [data, total] = await Promise.all([
+      this.prisma.faqEntry.findMany({ where, orderBy: { order: "asc" }, ...paginationParams(page, limit) }),
+      this.prisma.faqEntry.count({ where }),
+    ]);
+
+    return paginatedResult(data, page, limit, total);
   }
 
   async findOne(id: string) {

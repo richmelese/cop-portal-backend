@@ -72,3 +72,16 @@ model FaqEntry {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Leader {
+  id        String   @id @default(cuid())
+  tag       String
+  name      String
+  role      String
+  quote     String
+  image     String?
+  color     String   @default("navy")
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

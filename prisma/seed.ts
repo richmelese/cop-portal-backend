@@ -51,6 +51,36 @@ async function main() {
     await prisma.faqEntry.create({ data: { ...faq, order } });
   }
 
+  // --- Leaders (homepage quote carousel) ---
+  const leaders = [
+    {
+      tag: "Presidency",
+      name: "COP32 President-Designate",
+      role: "COP32 Presidency",
+      quote:
+        "COP32 is a meeting point for dialogue, consensus, and implementation-focused action — for Ethiopia, for Africa, and for the world.",
+      color: "navy",
+    },
+    {
+      tag: "Government",
+      name: "Minister of Planning and Development",
+      role: "Federal Democratic Republic of Ethiopia",
+      quote: "Climate resilience and economic development must move together. Addis Ababa gives us the platform to show how.",
+      color: "green",
+    },
+    {
+      tag: "Host City",
+      name: "Mayor of Addis Ababa",
+      role: "Addis Ababa City Administration",
+      quote: "Hosting COP32 is a chance to show what an African city can deliver when the world comes to the table.",
+      color: "blue",
+    },
+  ];
+  await prisma.leader.deleteMany();
+  for (const [order, leader] of leaders.entries()) {
+    await prisma.leader.create({ data: { ...leader, order } });
+  }
+
   // --- News ---
   const news = [
     {
@@ -127,6 +157,7 @@ async function main() {
   // eslint-disable-next-line no-console
   console.log("Seed complete:", {
     faqs: faqs.length,
+    leaders: leaders.length,
     news: news.length,
     tiers: tiers.length,
     pages: pages.length,

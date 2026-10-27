@@ -17,10 +17,12 @@ export class AuthService {
     const matches = await bcrypt.compare(password, user.passwordHash);
     if (!matches) throw new UnauthorizedException("Invalid email or password");
 
+    // The user's id is deliberately not echoed back here — it's already embedded
+    // in the signed accessToken's `sub` claim, and the frontend extracts it from
+    // there if it's ever needed, rather than this response exposing it twice.
     const payload = { sub: user.id, email: user.email };
     return {
       accessToken: await this.jwtService.signAsync(payload),
-      user: { id: user.id, email: user.email, name: user.name },
     };
   }
 }
