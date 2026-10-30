@@ -15,6 +15,7 @@ export class LeadersService {
     const where = {
       ...(query.tag ? { tag: { equals: query.tag, mode: "insensitive" as const } } : {}),
       ...(query.color ? { color: query.color } : {}),
+      ...(query.displayAs ? { displayAs: query.displayAs } : {}),
       ...(query.search
         ? {
             OR: [

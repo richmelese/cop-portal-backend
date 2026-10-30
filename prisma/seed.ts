@@ -60,6 +60,8 @@ async function main() {
       quote:
         "COP32 is a meeting point for dialogue, consensus, and implementation-focused action — for Ethiopia, for Africa, and for the world.",
       color: "navy",
+      // Featured in the homepage hero Leader Quote section (see LeaderQuote.tsx).
+      displayAs: "pm",
     },
     {
       tag: "Government",
@@ -79,6 +81,43 @@ async function main() {
   await prisma.leader.deleteMany();
   for (const [order, leader] of leaders.entries()) {
     await prisma.leader.create({ data: { ...leader, order } });
+  }
+
+  // --- Conference zones (homepage "COP32 Areas" section) ---
+  // Upsert with an empty `update` — once an admin edits a zone's content, re-running
+  // the seed must never overwrite it (a prior seed re-run once wiped live admin edits).
+  const zones = [
+    {
+      key: "blue",
+      name: "Blue Zone",
+      tone: "navy",
+      description: "The UN-managed official negotiation area, under the authority of the UNFCCC.",
+      note: "The Blue Zone is where formal negotiations take place and global climate policy is shaped.",
+      items: [
+        { icon: "Landmark", text: "Heads of State and Ministers" },
+        { icon: "Globe2", text: "National delegations" },
+        { icon: "Users", text: "Accredited observers" },
+        { icon: "Building2", text: "International organizations" },
+      ],
+      order: 0,
+    },
+    {
+      key: "green",
+      name: "Green Zone",
+      tone: "green",
+      description: "Coordinated by Ethiopia as host country, and open to the wider public.",
+      note: "The Green Zone is the public heart of COP32, open to everyone building the climate movement.",
+      items: [
+        { icon: "Briefcase", text: "Private sector" },
+        { icon: "GraduationCap", text: "Academia" },
+        { icon: "Megaphone", text: "Civil society" },
+        { icon: "Rocket", text: "Youth representatives and startups" },
+      ],
+      order: 1,
+    },
+  ];
+  for (const { key, ...data } of zones) {
+    await prisma.conferenceZone.upsert({ where: { key }, update: {}, create: { key, ...data } });
   }
 
   // --- News ---
@@ -107,35 +146,6 @@ async function main() {
     await prisma.newsPost.create({ data: { ...post, order } });
   }
 
-  // --- Sponsor tiers ---
-  const tiers = [
-    {
-      name: "Platinum Partners",
-      slots: ["National Banking Partner", "National Telecommunications Partner"],
-    },
-    {
-      name: "Gold Partners",
-      slots: ["National Airline Partner", "Energy Partner", "Insurance Partner"],
-    },
-    {
-      name: "Silver Partners",
-      slots: ["Hospitality Partner", "Logistics Partner"],
-    },
-  ];
-  await prisma.sponsorSlot.deleteMany();
-  await prisma.sponsorTier.deleteMany();
-  for (const [tierOrder, tier] of tiers.entries()) {
-    await prisma.sponsorTier.create({
-      data: {
-        name: tier.name,
-        order: tierOrder,
-        slots: {
-          create: tier.slots.map((category, order) => ({ category, order, status: "Partner slot open" })),
-        },
-      },
-    });
-  }
-
   // --- Content pages ---
   // Full transcription of every page on the site, generated from the frontend's
   // src/content/detailPages.ts (icon components swapped for their string names,
@@ -158,8 +168,8 @@ async function main() {
   console.log("Seed complete:", {
     faqs: faqs.length,
     leaders: leaders.length,
+    zones: zones.length,
     news: news.length,
-    tiers: tiers.length,
     pages: pages.length,
   });
 }

@@ -48,22 +48,6 @@ model NewsPost {
   updatedAt DateTime @updatedAt
 }
 
-model SponsorTier {
-  id    String        @id @default(cuid())
-  name  String
-  order Int           @default(0)
-  slots SponsorSlot[]
-}
-
-model SponsorSlot {
-  id       String      @id @default(cuid())
-  category String
-  status   String      @default("Partner slot open")
-  order    Int         @default(0)
-  tier     SponsorTier @relation(fields: [tierId], references: [id], onDelete: Cascade)
-  tierId   String
-}
-
 model FaqEntry {
   id        String   @id @default(cuid())
   question  String
@@ -81,7 +65,31 @@ model Leader {
   quote     String
   image     String?
   color     String   @default("navy")
+  // "pm" = featured in the homepage hero Leader Quote section; "leader" = shown only
+  // in the "COP32 Leaders" carousel. At most one leader should be "pm" at a time.
+  displayAs String   @default("leader")
   order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Key-value store for admin-uploaded images used by otherwise-static homepage
+// sections (e.g. the "COP32 Areas" illustration) — one row per replaceable image.
+model SiteAsset {
+  key       String   @id
+  url       String
+  updatedAt DateTime @updatedAt
+}
+
+// The homepage "COP32 Areas" section's Blue Zone / Green Zone cards — a fixed pair
+// (key "blue" | "green"), each holding its editable copy and bullet list.
+model ConferenceZone {
+  key         String   @id
+  name        String
+  tone        String   @default("navy")
+  description String
+  note        String
+  items       Json
+  order       Int      @default(0)
+  updatedAt   DateTime @updatedAt
 }
